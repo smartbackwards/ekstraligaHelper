@@ -112,11 +112,11 @@ def button_thing():
         if i%2==0:
             playerNameLabels[i] = OptionMenu(master, 
                                             playerNames[i],
-                                            *fetchRosters(awayteamname.get(),2022))
+                                            *fetchRosters(awayteamname.get(),2023))
         else:
             playerNameLabels[i] = OptionMenu(master, 
                                             playerNames[i],
-                                            *fetchRosters(hometeamname.get(),2022))
+                                            *fetchRosters(hometeamname.get(),2023))
         #playerNameLabels[i] = Label(master, text="wtf")
     for i in range(10):
         playerNameLabels[2*i].grid(row=4+i, column=1)
@@ -212,6 +212,31 @@ def statbutton(i):
                 print("couldn't load picture for",activeName)
             background.save('workingstats.png')
             background.close()
+        if len(stats)==0:
+            background = Image.open('playerNoStatBase.png')
+            draw = ImageDraw.Draw(background)
+            if activeNumber!="":
+                playerNo = "#"+activeNumber
+            else:
+                playerNo = ""
+            nameString = playerNo+" "+activeName.upper()
+
+
+            draw.text((439,874), nameString, (255,255,255), font=ImageFont.truetype("bahnschrift.ttf",40))
+
+            if i%2==0:
+                team = awayteamname.get()
+            else:
+                team = hometeamname.get()
+
+            try:
+                portrait = Image.open('portraits/'+team+"/"+activeName+'.png')
+                background.paste(portrait, (1142,613) )
+                portrait.close()
+            except:
+                print("couldn't load picture for",activeName)
+            background.save('workingstats.png')
+            background.close()            
 
     else:
         file=open('workingPitcher.txt', 'w', encoding='UTF-8')
