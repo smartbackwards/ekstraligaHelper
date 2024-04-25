@@ -9,7 +9,7 @@ battingStats = pd.read_csv('2022finalbatting.csv')
 pitchingStats = pd.read_csv('2022finalpitching.csv')
 font = ImageFont.truetype("bahnschrift.ttf",22)
 def writeDefense(team):
-    img = Image.open('defensetemplate.png')
+    img = Image.open('templates/defensetemplate.png')
     draw = ImageDraw.Draw(img)
     for i in range(len(playerNameLabels)):
         surname = playerNames[i].get()
@@ -40,7 +40,7 @@ def writeDefense(team):
             elif position=='P':
                 draw.text((1673-font.getlength(surname)/2,468),surname,colors,font=font)                 
 
-    img.save('workingdefense.png')
+    img.save('working_graphics/workingdefense.png')
     img.close()
 #1788,460
 
@@ -49,7 +49,7 @@ tl.grid(row=0, column=1, sticky=W, pady=2)
 htl = Label(master, text="Home team:")
 htl.grid(row=0, column=5, sticky=W, pady=2)
 
-teams = ["team", "Stal", "Silesia", "Gepardy", "Barons", "Centaury"]
+teams = ["team", "Stal", "Silesia", "Gepardy", "Barons", "Centaury", "Rawa", "Dęby", "Piraci"]
 
 awayteamname = StringVar(master)
 
@@ -80,19 +80,19 @@ def fetchRosters(team, year):
 def button_thing():
     away_game = filename(nonbreakcoloraway.get(),awayteamname.get())
     home_game = filename(nonbreakcolorhome.get(),hometeamname.get())
-    away_break = filename(breakcoloraway.get(),awayteamname.get())
-    home_break = filename(breakcolorhome.get(),hometeamname.get())
+    away_break = filename(0,awayteamname.get())
+    home_break = filename(0,hometeamname.get())
 
-    base = Image.open("base.png")
+    base = Image.open("templates/base.png")
     ag = Image.open("away/"+away_game)
     hg = Image.open("home/"+home_game)
-    bases = Image.open("basebases.png")
+    bases = Image.open("templates/basebases.png")
 
     base.paste(ag, (0, 0), ag)
     base.paste(hg, (0, 0), hg)
     base.paste(bases, (0, 0), bases)
 
-    base.save("workinggamebase.png")
+    base.save("working_graphics/workinggamebase.png")
     base.close()
     ag.close()
     hg.close()
@@ -101,7 +101,7 @@ def button_thing():
     breakaway = Image.open("secondaway/"+away_break)
     breakhome = Image.open("secondhome/"+home_break)
     breakaway.paste(breakhome,(0,0),breakhome)
-    breakaway.save("workinggamebreak.png")
+    breakaway.save("working_graphics/workinggamebreak.png")
     breakaway.close()
     breakhome.close()
 
@@ -112,12 +112,11 @@ def button_thing():
         if i%2==0:
             playerNameLabels[i] = OptionMenu(master, 
                                             playerNames[i],
-                                            *fetchRosters(awayteamname.get(),2023))
+                                            *fetchRosters(awayteamname.get(),2024))
         else:
             playerNameLabels[i] = OptionMenu(master, 
                                             playerNames[i],
-                                            *fetchRosters(hometeamname.get(),2023))
-        #playerNameLabels[i] = Label(master, text="wtf")
+                                            *fetchRosters(hometeamname.get(),2024))
     for i in range(10):
         playerNameLabels[2*i].grid(row=4+i, column=1)
         playerNameLabels[2*i+1].grid(row=4+i, column=5)
@@ -134,15 +133,10 @@ primarycoloraway = Checkbutton(master, text="secondary?", variable=nonbreakcolor
 nonbreakcolorhome=IntVar(master)
 primarycolorhome = Checkbutton(master, text="secondary?", variable=nonbreakcolorhome, offvalue=1, onvalue=2)
 
-breakcoloraway=IntVar(master)
-bprimarycoloraway = Checkbutton(master, text="break secondary?", variable=breakcoloraway, offvalue=1, onvalue=2)
-breakcolorhome=IntVar(master)
-bprimarycolorhome = Checkbutton(master, text="break secondary?", variable=breakcolorhome, offvalue=1, onvalue=2)
 
 primarycoloraway.grid(row=2, column=1, pady=2 )
 primarycolorhome.grid(row=2, column=5, pady=2 )
-bprimarycoloraway.grid(row=3, column=1, pady=2 )
-bprimarycolorhome.grid(row=3, column=5, pady=2 )
+
 
 shirtNumbers = []
 playerNames = []
@@ -169,13 +163,13 @@ def statbutton(i):
 #ImageFont.truetype("bahnschrift.ttf",22)
     if battingOrder<10:
         stats = battingStats.loc[battingStats['Name']==depolishifiedName]
-        file=open('workingBatter.txt', 'w', encoding='UTF-8')
+        file=open('working_graphics/workingBatter.txt', 'w', encoding='UTF-8')
         battingString = str(battingOrder)+". "+activeName
         
         file.write(battingString)
         file.close()
         if len(stats)==1:
-            background = Image.open('playerStatBase.png')
+            background = Image.open('templates/playerStatBase.png')
             draw = ImageDraw.Draw(background)
             #draw.text((1673-font.getlength(surname)/2,527),surname,colors,font=font)
             try:
@@ -210,10 +204,10 @@ def statbutton(i):
                 portrait.close()
             except:
                 print("couldn't load picture for",activeName)
-            background.save('workingstats.png')
+            background.save('working_graphics/workingstats.png')
             background.close()
         if len(stats)==0:
-            background = Image.open('playerNoStatBase.png')
+            background = Image.open('templates/playerNoStatBase.png')
             draw = ImageDraw.Draw(background)
             if activeNumber!="":
                 playerNo = "#"+activeNumber
@@ -235,17 +229,17 @@ def statbutton(i):
                 portrait.close()
             except:
                 print("couldn't load picture for",activeName)
-            background.save('workingstats.png')
+            background.save('working_graphics/workingstats.png')
             background.close()            
 
     else:
-        file=open('workingPitcher.txt', 'w', encoding='UTF-8')
+        file=open('working_graphics/workingPitcher.txt', 'w', encoding='UTF-8')
         pitchingString = "P. "+activeName
         file.write(pitchingString)
         file.close()
         stats = pitchingStats.loc[pitchingStats['Name']==depolishifiedName]
         if len(stats)==1:
-            background = Image.open('playerStatBase.png')
+            background = Image.open('templates/playerStatBase.png')
             draw = ImageDraw.Draw(background)
             #draw.text((1673-font.getlength(surname)/2,527),surname,colors,font=font)
             try:
@@ -281,7 +275,7 @@ def statbutton(i):
                 portrait.close()
             except:
                 print("couldn't load picture for",activeName)
-            background.save('workingstats.png')
+            background.save('working_graphics/workingstats.png')
             background.close()
 
 
@@ -322,7 +316,7 @@ def addCount(what,increment):
     elif what=="strikes":
         strikes = strikes+increment
 
-    f = open('count.txt', 'w')
+    f = open('working_graphics/count.txt', 'w')
     f.write(str(balls)+"-"+str(strikes))
     f.close()
 def resetCount():
@@ -330,18 +324,18 @@ def resetCount():
     global strikes    
     balls = 0
     strikes = 0
-    f = open('count.txt', 'w')
+    f = open('working_graphics/count.txt', 'w')
     f.write(str(balls)+"-"+str(strikes))
     f.close()
 def addInnings(increment):
     global innings
     innings = innings+increment
-    f = open('innings.txt', 'w')
+    f = open('working_graphics/innings.txt', 'w')
     f.write(str(innings)+'. INNING')
     f.close()
 def betweenInnings():
     global middleFlag
-    f = open('betweenInnings.txt','w',encoding='UTF-8')
+    f = open('working_graphics/betweenInnings.txt','w',encoding='UTF-8')
     if not middleFlag:
         middleFlag = True
         f.write('ŚRODEK '+str(innings)+'. ZMIANY')
