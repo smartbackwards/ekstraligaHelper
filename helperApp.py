@@ -5,8 +5,6 @@ import pandas as pd
 from unidecode import unidecode
 master = Tk()
 
-battingStats = pd.read_csv('2023finalbatting.csv')
-pitchingStats = pd.read_csv('2023finalpitching.csv')
 font = ImageFont.truetype("bahnschrift.ttf",22)
 def writeDefense(team):
     img = Image.open('templates/defensetemplate.png')
@@ -41,6 +39,82 @@ def writeDefense(team):
                 draw.text((1673-font.getlength(surname)/2,468),surname,colors,font=font)                 
 
     img.save('working_graphics/workingdefense.png')
+    img.close()
+
+    img = Image.open("templates/lineupsmallbase.png")
+    draw = ImageDraw.Draw(img)
+    lo=1
+    nameString=""
+    positionString=""
+    tfont = ImageFont.truetype("bahnschrift.ttf",40)
+    if team=='home':
+        draw.text((1550,585),"AWAY LINEUP", (255,255,255),font=tfont)
+    elif team=='away':
+        draw.text((1550,585),"HOME LINEUP", (255,255,255),font=tfont)
+    tfont = ImageFont.truetype("bahnschrift.ttf",24)
+    for i in range(len(playerNameLabels)):
+        name = playerNames[i].get()
+        position = playerPositions[i].get()
+        if (team=='home' and i%2==0) or (team == 'away' and i%2==1):
+            if lo<10:
+                nameString+=str(lo)+". "+name+"\n"
+                lo+=1
+                positionString+=position+"\n"
+    draw.text((1518,660),nameString,(255,255,255),font=tfont)
+    draw.text((1800,660),positionString,(255,255,255),font=tfont)
+    img.save('working_graphics/workinglineup.png')
+    img.close()
+
+    img = Image.open("templates/bigdefensebase.png")
+    draw=ImageDraw.Draw(img)
+    tfont = ImageFont.truetype("bahnschrift.ttf",20)
+    for i in range(len(playerNameLabels)):
+        if (team=='away' and i%2==0) or (team == 'home' and i%2==1):
+            name = playerNames[i].get()
+            position = playerPositions[i].get()
+            try:
+                modifiedName = "#"+shirtNumbers[i].get('1.0', 'end-1c')+" "+name[0]+"."+name[name.find(' '):]
+            except:
+                modifiedName=""
+            if i%2==0:
+                teamname = awayteamname.get()
+            else:
+                teamname = hometeamname.get()
+            try:
+                portrait = Image.open('portraits/'+teamname+"/"+name+'.png')
+                portrait = portrait.resize((280,200),Image.LANCZOS)
+            except:
+                portrait = 123415
+            
+            coords = (-1,-1)
+            if position=="C":
+                coords=(872,701)
+            if position=="3B":
+                coords=(162,563)
+            if position=="SS":
+                coords=(495,415)
+            if position=="LF":
+                coords=(251,62)
+            if position=="CF":
+                coords=(872,51)
+            if position=="P":
+                coords=(872,375)
+            if position=="RF":
+                coords=(1488,62)   
+            if position=="2B":
+                coords=(1250,415)
+            if position=="1B":
+                coords=(1583,563)
+            if position!="DH":  
+                draw.text((88+coords[0]-tfont.getlength(modifiedName)/2,coords[1]+260),modifiedName,(255,255,255),font=tfont) 
+            try:
+                adjc = (coords[0]-50,coords[1]+50)
+                if position!="DH":
+                    img.paste(portrait,adjc)
+            except:
+                continue            
+                
+    img.save("working_graphics/workingbigdefense.png")
     img.close()
 #1788,460
 
@@ -162,121 +236,42 @@ def statbutton(i):
 
 #ImageFont.truetype("bahnschrift.ttf",22)
     if battingOrder<10:
-        stats = battingStats.loc[battingStats['Name']==depolishifiedName]
         file=open('working_graphics/workingBatter.txt', 'w', encoding='UTF-8')
         battingString = str(battingOrder)+". "+activeName
         
         file.write(battingString)
         file.close()
-        if len(stats)==1:
-            background = Image.open('templates/playerStatBase.png')
-            draw = ImageDraw.Draw(background)
-            #draw.text((1673-font.getlength(surname)/2,527),surname,colors,font=font)
-            try:
-                playerNo = int(activeNumber)
-            except:
-                playerNo = stats['#'].values[0]
-            nameString = "#"+str(playerNo)+" "+activeName.upper()
-            avg = formatSlashString('AVG', stats)
-            obp = formatSlashString('OBP', stats)
-            slg = formatSlashString('SLG', stats)
-            rbi = stats["RBI"].values[0]
-            hr = stats["HR"].values[0]
-            g = stats["G"].values[0]
-            if g == 1:
-                gameString = "1 GAME"
-            else:
-                gameString = str(g)+" GAMES"
-            gameString = gameString + " - 2022"
-            draw.text((439,874), nameString, (255,255,255), font=ImageFont.truetype("bahnschrift.ttf",40))
-            draw.text((1478-ImageFont.truetype("bahnschrift.ttf",25).getlength(gameString), 880), gameString, (255,255,255), font = ImageFont.truetype("bahnschrift.ttf",25))
-            statString = f"{avg}/{obp}/{slg} AVG/OBP/SLG  {rbi} RBI  {hr} HR"
-            draw.text((464,938), statString, (255,255,255), font =ImageFont.truetype("bahnschrift.ttf",40))
-
-            if i%2==0:
-                team = awayteamname.get()
-            else:
-                team = hometeamname.get()
-
-            try:
-                portrait = Image.open('portraits/'+team+"/"+activeName+'.png')
-                background.paste(portrait, (1142,613) )
-                portrait.close()
-            except:
-                print("couldn't load picture for",activeName)
-            background.save('working_graphics/workingstats.png')
-            background.close()
-        if len(stats)==0:
-            background = Image.open('templates/playerNoStatBase.png')
-            draw = ImageDraw.Draw(background)
-            if activeNumber!="":
-                playerNo = "#"+activeNumber
-            else:
-                playerNo = ""
-            nameString = playerNo+" "+activeName.upper()
-
-
-            draw.text((439,874), nameString, (255,255,255), font=ImageFont.truetype("bahnschrift.ttf",40))
-
-            if i%2==0:
-                team = awayteamname.get()
-            else:
-                team = hometeamname.get()
-
-            try:
-                portrait = Image.open('portraits/'+team+"/"+activeName+'.png')
-                background.paste(portrait, (1142,613) )
-                portrait.close()
-            except:
-                print("couldn't load picture for",activeName)
-            background.save('working_graphics/workingstats.png')
-            background.close()            
-
     else:
         file=open('working_graphics/workingPitcher.txt', 'w', encoding='UTF-8')
-        pitchingString = "P. "+activeName
-        file.write(pitchingString)
+        battingString = "P. "+activeName
+        
+        file.write(battingString)
         file.close()
-        stats = pitchingStats.loc[pitchingStats['Name']==depolishifiedName]
-        if len(stats)==1:
-            background = Image.open('templates/playerStatBase.png')
-            draw = ImageDraw.Draw(background)
-            #draw.text((1673-font.getlength(surname)/2,527),surname,colors,font=font)
-            try:
-                playerNo = int(activeNumber)
-            except:
-                playerNo = stats['#'].values[0]
-            nameString = "#"+str(playerNo)+" "+activeName.upper()
-            ip = stats["IP"].values[0]
-            g = stats["G"].values[0]
-            era = stats["ERA"].values[0]
-            era = '%.2f' % era
-            k = stats["K"].values[0]
-            bb = stats["BB"].values[0]
-            erap = stats["ERA+"].values[0]
-            if g == 1:
-                gameString = "1 GAME"
-            else:
-                gameString = str(g)+" GAMES"
-            gameString = gameString + " - 2022"
-            draw.text((439,874), nameString, (255,255,255), font=ImageFont.truetype("bahnschrift.ttf",40))
-            draw.text((1478-ImageFont.truetype("bahnschrift.ttf",25).getlength(gameString), 880), gameString, (255,255,255), font = ImageFont.truetype("bahnschrift.ttf",25))
-            statString = f"{ip} IP  {era} ERA  {k} K  {bb} BB  {erap} ERA+"
-            draw.text((464,938), statString, (255,255,255), font =ImageFont.truetype("bahnschrift.ttf",40))
 
-            if i%2==0:
-                team = awayteamname.get()
-            else:
-                team = hometeamname.get()
+    background = Image.open('templates/playerNoStatBase.png')
+    draw = ImageDraw.Draw(background)
+    if activeNumber!="":
+        playerNo = "#"+activeNumber+" "
+    else:
+        playerNo = ""
+    nameString = playerNo+activeName.upper()
 
-            try:
-                portrait = Image.open('portraits/'+team+"/"+activeName+'.png')
-                background.paste(portrait, (1142,613) )
-                portrait.close()
-            except:
-                print("couldn't load picture for",activeName)
-            background.save('working_graphics/workingstats.png')
-            background.close()
+
+    draw.text((439,874), nameString, (255,255,255), font=ImageFont.truetype("bahnschrift.ttf",40))
+
+    if i%2==0:
+        team = awayteamname.get()
+    else:
+        team = hometeamname.get()
+
+    try:
+        portrait = Image.open('portraits/'+team+"/"+activeName+'.png')
+        background.paste(portrait, (1142,613) )
+        portrait.close()
+    except:
+        print("couldn't load picture for",activeName)
+    background.save('working_graphics/workingstats.png')
+    background.close()
 
 
 
