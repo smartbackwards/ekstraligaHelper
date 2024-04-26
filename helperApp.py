@@ -5,8 +5,8 @@ import pandas as pd
 from unidecode import unidecode
 master = Tk()
 
-battingStats = pd.read_csv('2022finalbatting.csv')
-pitchingStats = pd.read_csv('2022finalpitching.csv')
+battingStats = pd.read_csv('2023finalbatting.csv')
+pitchingStats = pd.read_csv('2023finalpitching.csv')
 font = ImageFont.truetype("bahnschrift.ttf",22)
 def writeDefense(team):
     img = Image.open('templates/defensetemplate.png')
